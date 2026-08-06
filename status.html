@@ -1,0 +1,47 @@
+<!doctype html><html lang="th"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7bfd4">
+<meta name="description" content="BeeBiew Booking — Luxury Pink Premium booking experience">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<title>ตรวจสอบสถานะการจอง</title></head><body data-page="status">
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="aurora a1"></div><div class="aurora a2"></div><div class="sparkles"></div>
+<header class="topbar glass">
+  <a class="brand" href="index.html"><img src="assets/logo.png" alt="BeeBiew Booking"><span>BeeBiew</span></a>
+  <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู">☰</button>
+  <nav id="mainNav">
+    <a href="index.html">หน้าหลัก</a><a href="about.html">เกี่ยวกับเรา</a>
+    <a href="booking.html">จองคิว</a><a href="status.html">ตรวจสอบการจอง</a>
+    <a href="admin.html">แอดมิน</a>
+  </nav>
+  <button class="theme-toggle" id="themeToggle" aria-label="สลับธีม">🌙</button>
+</header>
+
+<main class="page-main">
+<section class="section reveal narrow">
+<div class="section-title"><span>BOOKING STATUS</span><h1>ตรวจสอบสถานะการจอง</h1><p>กรอกรหัสการจองและเบอร์โทรศัพท์ที่ใช้ส่งคำขอ</p></div>
+<form id="statusForm" class="glass status-form"><label>รหัสการจอง<input name="bookingId" required placeholder="เช่น BB2608071234"></label><label>เบอร์โทรศัพท์<input name="phone" required inputmode="tel" placeholder="เบอร์ที่ใช้จอง"></label><button class="btn primary shimmer" type="submit">🔎 ตรวจสอบสถานะ</button></form>
+<div id="statusResult"></div>
+</section>
+</main>
+<footer class="footer glass">
+  <img src="assets/logo.png" alt="BeeBiew Booking">
+  <h3>BeeBiew Booking</h3>
+  <p>Luxury Pink Booking Experience</p>
+  <div class="socials"><a href="#" aria-label="Instagram">Instagram</a><span>•</span><a href="#" aria-label="Facebook">Facebook</a><span>•</span><a href="#" aria-label="TikTok">TikTok</a></div>
+  <small>© 2026 BeeBiew Booking. All Rights Reserved.</small>
+</footer>
+<nav class="mobile-nav glass">
+  <a href="tel:0646761581"><b>📞</b><span>โทร</span></a>
+  <a href="booking.html" class="primary"><b>💗</b><span>จองคิว</span></a>
+  <a href="https://line.me/" target="_blank" rel="noopener"><b>💬</b><span>LINE</span></a>
+  <a href="status.html"><b>🔎</b><span>สถานะ</span></a>
+</nav>
+<a class="floating-call" href="tel:0646761581" aria-label="โทรหา BeeBiew">📞</a>
+<a class="floating-line" href="https://line.me/" target="_blank" rel="noopener" aria-label="LINE">LINE</a>
+<script src="script.js"></script>
+</body></html>
