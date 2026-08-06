@@ -1,66 +1,20 @@
-
-const STORE_KEY='beebiew_bookings_v3', LIMIT=2, ADMIN_PIN='2468';
-const $=(s,p=document)=>p.querySelector(s), $$=(s,p=document)=>[...p.querySelectorAll(s)];
-const localDate=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().split('T')[0]};
-const getBookings=()=>{try{return JSON.parse(localStorage.getItem(STORE_KEY))||[]}catch{return[]}};
-const saveBookings=v=>localStorage.setItem(STORE_KEY,JSON.stringify(v));
-const countFor=d=>getBookings().filter(b=>b.date===d && b.status!=='ปฏิเสธ').length;
-const formatDate=s=>new Intl.DateTimeFormat('th-TH',{dateStyle:'long'}).format(new Date(s+'T00:00:00'));
-const makeId=()=>`BB${new Date().toISOString().slice(2,10).replaceAll('-','')}${String(Date.now()).slice(-4)}`;
-
-function initGlobal(){
- const menu=$('#menuToggle'),nav=$('#mainNav'); if(menu&&nav)menu.onclick=()=>nav.classList.toggle('open');
- const theme=$('#themeToggle'); if(theme){theme.onclick=()=>{document.body.classList.toggle('dark');theme.textContent=document.body.classList.contains('dark')?'☀️':'🌙'}};
- addEventListener('scroll',()=>{const p=document.documentElement,bar=$('#scrollProgress');if(bar)bar.style.width=(p.scrollTop/(p.scrollHeight-p.clientHeight)*100||0)+'%'});
- const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});$$('.reveal').forEach(el=>observer.observe(el));
- $$('.ripple').forEach(btn=>btn.addEventListener('click',e=>{const s=document.createElement('span');s.className='ripple-dot';btn.appendChild(s);setTimeout(()=>s.remove(),500)}));
-}
-
-function initHome(){
- const all=getBookings(),today=localDate(),used=countFor(today);
- const vals=[['#todayBooked',used],['#todayRemaining',Math.max(0,LIMIT-used)],['#allBookings',all.length]];
- vals.forEach(([sel,target])=>{const el=$(sel);if(!el)return;let n=0;const step=Math.max(1,Math.ceil(target/20));const t=setInterval(()=>{n=Math.min(target,n+step);el.textContent=n;if(n>=target)clearInterval(t)},35)});
-}
-
-function initBooking(){
- const form=$('#bookingForm'),date=$('#bookingDate'),time=$('#bookingTime'),type=$('#bookingType'),capacity=$('#capacityMessage');
- if(!form)return;
- date.min=localDate();
- for(let h=9;h<=20;h++){const o=document.createElement('option');o.value=`${String(h).padStart(2,'0')}:00`;o.textContent=o.value;time.appendChild(o)}
- const typeButtons=$$('#typePicker button'); typeButtons.forEach(b=>{const o=document.createElement('option');o.value=b.dataset.type;o.textContent=b.dataset.type;type.appendChild(o);b.onclick=()=>selectType(b.dataset.type)});
- function selectType(v){type.value=v;typeButtons.forEach(b=>b.classList.toggle('active',b.dataset.type===v))}
- type.onchange=()=>selectType(type.value);
- const param=new URLSearchParams(location.search).get('type');if(param)selectType(param);
- function updateCapacity(){const d=date.value||localDate(),used=countFor(d),left=Math.max(0,LIMIT-used);capacity.textContent=date.value?(used>=LIMIT?'❌ วันนี้คิวเต็มแล้ว กรุณาเลือกวันอื่น':`วันที่เลือกยังเหลือ ${left} คิว`):'';form.querySelector('[type=submit]').disabled=used>=LIMIT}
- date.onchange=updateCapacity;updateCapacity();
- let pending=null;
- form.onsubmit=e=>{e.preventDefault();const data=Object.fromEntries(new FormData(form));if(countFor(data.date)>=LIMIT){updateCapacity();return}pending=data;$('#confirmSummary').innerHTML=`<p><b>ชื่อ:</b> ${data.name}</p><p><b>วันและเวลา:</b> ${formatDate(data.date)} เวลา ${data.time}</p><p><b>ประเภท:</b> ${data.type}</p>`;$('#confirmModal').showModal()};
- $('#cancelConfirm').onclick=()=>$('#confirmModal').close();
- $('#confirmSubmit').onclick=()=>{if(!pending)return;const list=getBookings(),id=makeId();list.push({...pending,id,status:'รอยืนยัน',createdAt:new Date().toISOString()});saveBookings(list);$('#confirmModal').close();$('#successMessage').innerHTML=`รหัสการจองของคุณคือ <strong>${id}</strong><br>กรุณาเก็บรหัสนี้ไว้ตรวจสอบสถานะ`;$('#successModal').showModal();form.reset();selectType('');pending=null;updateCapacity()};
- $('#closeSuccess').onclick=()=>$('#successModal').close();
-}
-
-function initStatus(){
- const form=$('#statusForm'),result=$('#statusResult');if(!form)return;
- form.onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form)),b=getBookings().find(x=>x.id.toLowerCase()===d.bookingId.trim().toLowerCase()&&x.phone===d.phone.trim());
- if(!b){result.innerHTML='<div class="status-card glass"><h3>ไม่พบข้อมูลการจอง</h3><p>กรุณาตรวจสอบรหัสและเบอร์โทรอีกครั้ง</p></div>';return}
- const cls=b.status==='ยืนยันแล้ว'?'approved':b.status==='ปฏิเสธ'?'rejected':'pending';
- result.innerHTML=`<div class="status-card glass"><span class="status-pill ${cls}">${b.status}</span><h2>${b.id}</h2><p><b>ชื่อ:</b> ${b.name}</p><p><b>วันและเวลา:</b> ${formatDate(b.date)} เวลา ${b.time}</p><p><b>ประเภท:</b> ${b.type}</p><p><b>สถานที่:</b> ${b.location||'-'}</p></div>`};
-}
-
-function initAdmin(){
- const login=$('#adminLogin');if(!login)return;
- $('#adminLoginBtn').onclick=()=>{if($('#adminPin').value!==ADMIN_PIN){alert('PIN ไม่ถูกต้อง');return}login.hidden=true;$('#adminPanel').hidden=false;renderAdmin()};
- $('#adminSearch').oninput=renderAdmin;$('#adminFilter').onchange=renderAdmin;
- $('#exportBookings').onclick=()=>{const rows=[['รหัส','ชื่อ','เบอร์','วันที่','เวลา','ประเภท','สถานที่','รายละเอียด','สถานะ'],...getBookings().map(b=>[b.id,b.name,b.phone,b.date,b.time,b.type,b.location||'',b.details||'',b.status])];const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download='beebiew-bookings.csv';a.click();URL.revokeObjectURL(a.href)};
-}
-function renderAdmin(){
- const list=getBookings(),q=($('#adminSearch')?.value||'').toLowerCase(),f=$('#adminFilter')?.value||'';
- $('#adminTotal').textContent=list.length;$('#adminPending').textContent=list.filter(b=>b.status==='รอยืนยัน').length;$('#adminApproved').textContent=list.filter(b=>b.status==='ยืนยันแล้ว').length;$('#adminRejected').textContent=list.filter(b=>b.status==='ปฏิเสธ').length;
- const filtered=list.filter(b=>(!f||b.status===f)&&(!q||[b.id,b.name,b.phone,b.type].join(' ').toLowerCase().includes(q))).sort((a,b)=>`${b.date}${b.time}`.localeCompare(`${a.date}${a.time}`));
- $('#adminList').innerHTML=filtered.length?filtered.map(b=>`<article class="admin-card glass"><div class="admin-card-top"><div><span class="status-pill ${b.status==='ยืนยันแล้ว'?'approved':b.status==='ปฏิเสธ'?'rejected':'pending'}">${b.status}</span><h3>${b.name} • ${b.id}</h3><p>${formatDate(b.date)} เวลา ${b.time} • ${b.type}</p><p>📞 ${b.phone} ${b.location?'• 📍 '+b.location:''}</p></div></div><div class="admin-actions"><button class="small-btn approve" onclick="setStatus('${b.id}','ยืนยันแล้ว')">ยืนยัน</button><button class="small-btn reject" onclick="setStatus('${b.id}','ปฏิเสธ')">ปฏิเสธ</button><button class="small-btn delete" onclick="deleteBooking('${b.id}')">ลบ</button></div></article>`).join(''):'<div class="glass admin-card">ยังไม่มีรายการจอง</div>';
-}
-window.setStatus=(id,status)=>{const list=getBookings(),i=list.findIndex(b=>b.id===id);if(i>=0){list[i].status=status;saveBookings(list);renderAdmin()}};
-window.deleteBooking=id=>{if(confirm('ต้องการลบรายการนี้หรือไม่?')){saveBookings(getBookings().filter(b=>b.id!==id));renderAdmin()}};
-
-document.addEventListener('DOMContentLoaded',()=>{initGlobal();const p=document.body.dataset.page;if(p==='home')initHome();if(p==='booking')initBooking();if(p==='status')initStatus();if(p==='admin')initAdmin()});
+const CFG=window.BEEBIEW_CONFIG||{},LIMIT=CFG.DAILY_LIMIT||2;
+const online=CFG.SUPABASE_ANON_KEY&&!CFG.SUPABASE_ANON_KEY.includes('วาง_');
+const db=online?supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
+const KEY='beebiew_bookings_v4',$=(s,p=document)=>p.querySelector(s),$$=(s,p=document)=>[...p.querySelectorAll(s)];
+const day=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().split('T')[0]};
+const local=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};const save=a=>localStorage.setItem(KEY,JSON.stringify(a));
+const fmt=s=>new Intl.DateTimeFormat('th-TH',{dateStyle:'long'}).format(new Date(s+'T00:00:00'));const code=()=>`BB${new Date().toISOString().slice(2,10).replaceAll('-','')}${String(Date.now()).slice(-4)}`;
+async function all(){if(db){const {data,error}=await db.from('bookings').select('*').order('created_at',{ascending:false});if(!error)return data||[]}return local()}
+async function countDate(d){if(db){const {count,error}=await db.from('bookings').select('*',{count:'exact',head:true}).eq('booking_date',d).neq('status','ปฏิเสธ');if(!error)return count||0}return local().filter(x=>(x.booking_date||x.date)===d&&x.status!=='ปฏิเสธ').length}
+async function add(x){if(db){const {error}=await db.from('bookings').insert(x);if(error)throw error}else{const a=local();a.push(x);save(a)}}
+async function setState(id,status){if(db){const {error}=await db.from('bookings').update({status}).eq('booking_code',id);if(error)throw error}else{const a=local(),i=a.findIndex(x=>(x.booking_code||x.id)===id);if(i>=0){a[i].status=status;save(a)}}}
+async function remove(id){if(db){await db.from('bookings').delete().eq('booking_code',id)}else save(local().filter(x=>(x.booking_code||x.id)!==id))}
+function global(){const m=$('#menuToggle'),n=$('#mainNav');if(m)m.onclick=()=>n.classList.toggle('open');const t=$('#themeToggle');if(t)t.onclick=()=>{document.body.classList.toggle('dark');t.textContent=document.body.classList.contains('dark')?'☀️':'🌙'};addEventListener('scroll',()=>{const p=document.documentElement,b=$('#scrollProgress');if(b)b.style.width=(p.scrollTop/(p.scrollHeight-p.clientHeight)*100||0)+'%'});const o=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('visible')),{threshold:.1});$$('.reveal').forEach(x=>o.observe(x))}
+async function home(){const a=await all(),u=await countDate(day());if($('#todayBooked'))$('#todayBooked').textContent=u;if($('#todayRemaining'))$('#todayRemaining').textContent=Math.max(0,LIMIT-u);if($('#allBookings'))$('#allBookings').textContent=a.length}
+function booking(){const f=$('#bookingForm');if(!f)return;const date=$('#bookingDate'),time=$('#bookingTime'),type=$('#bookingType'),cap=$('#capacityMessage');date.min=day();for(let h=9;h<=20;h++){const o=document.createElement('option');o.value=`${String(h).padStart(2,'0')}:00`;o.textContent=o.value;time.appendChild(o)}const cards=$$('#typePicker button');cards.forEach(c=>{const o=document.createElement('option');o.value=c.dataset.type;o.textContent=c.dataset.type;type.appendChild(o);c.onclick=()=>pick(c.dataset.type)});function pick(v){type.value=v;cards.forEach(c=>c.classList.toggle('active',c.dataset.type===v))}type.onchange=()=>pick(type.value);const q=new URLSearchParams(location.search).get('type');if(q)pick(q);async function capacity(){if(!date.value)return cap.textContent='';const u=await countDate(date.value);cap.textContent=u>=LIMIT?'❌ วันนี้คิวเต็มแล้ว กรุณาเลือกวันอื่น':`วันที่เลือกยังเหลือ ${LIMIT-u} คิว`;f.querySelector('[type=submit]').disabled=u>=LIMIT}date.onchange=capacity;let pending;f.onsubmit=async e=>{e.preventDefault();if(await countDate(date.value)>=LIMIT)return capacity();const d=Object.fromEntries(new FormData(f));pending={booking_code:code(),customer_name:d.name,phone:d.phone,booking_date:d.date,booking_time:d.time,booking_type:d.type,location:d.location||'',details:d.details||'',status:'รอยืนยัน'};$('#confirmSummary').innerHTML=`<p><b>ชื่อ:</b> ${pending.customer_name}</p><p><b>วันและเวลา:</b> ${fmt(pending.booking_date)} เวลา ${pending.booking_time}</p><p><b>ประเภท:</b> ${pending.booking_type}</p>`;$('#confirmModal').showModal()};$('#cancelConfirm').onclick=()=>$('#confirmModal').close();$('#confirmSubmit').onclick=async()=>{try{await add(pending);$('#confirmModal').close();$('#successMessage').innerHTML=`รหัสการจองของคุณคือ <strong>${pending.booking_code}</strong><br>กรุณาเก็บรหัสนี้ไว้ตรวจสอบสถานะ`;$('#successModal').showModal();f.reset();pick('');capacity()}catch(e){alert('บันทึกไม่สำเร็จ: '+e.message)}};$('#closeSuccess').onclick=()=>$('#successModal').close()}
+function status(){const f=$('#statusForm');if(!f)return;f.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f)),a=await all(),b=a.find(x=>(x.booking_code||x.id).toLowerCase()===d.bookingId.trim().toLowerCase()&&x.phone===d.phone.trim());if(!b)return $('#statusResult').innerHTML='<div class="status-card glass"><h3>ไม่พบข้อมูลการจอง</h3></div>';const st=b.status,cls=st==='ยืนยันแล้ว'?'approved':st==='ปฏิเสธ'?'rejected':'pending';$('#statusResult').innerHTML=`<div class="status-card glass"><span class="status-pill ${cls}">${st}</span><h2>${b.booking_code||b.id}</h2><p><b>ชื่อ:</b> ${b.customer_name||b.name}</p><p><b>วันและเวลา:</b> ${fmt(b.booking_date||b.date)} เวลา ${b.booking_time||b.time}</p><p><b>ประเภท:</b> ${b.booking_type||b.type}</p></div>`}}
+async function admin(){if(!$('#adminLogin'))return;if(!db){$('#adminLogin').insertAdjacentHTML('beforeend','<p><b>ยังไม่ได้ใส่ Publishable Key ใน config.js</b></p>');return}$('#adminLoginBtn').onclick=async()=>{const {error}=await db.auth.signInWithPassword({email:$('#adminEmail')?.value||prompt('อีเมลแอดมิน'),password:$('#adminPassword')?.value||prompt('รหัสผ่าน')});if(error)return alert(error.message);$('#adminLogin').hidden=true;$('#adminPanel').hidden=false;render()};const {data}=await db.auth.getSession();if(data.session){$('#adminLogin').hidden=true;$('#adminPanel').hidden=false;render()}if($('#adminSearch'))$('#adminSearch').oninput=render;if($('#adminFilter'))$('#adminFilter').onchange=render}
+async function render(){const a=await all(),q=($('#adminSearch')?.value||'').toLowerCase(),f=$('#adminFilter')?.value||'';$('#adminTotal').textContent=a.length;$('#adminPending').textContent=a.filter(x=>x.status==='รอยืนยัน').length;$('#adminApproved').textContent=a.filter(x=>x.status==='ยืนยันแล้ว').length;$('#adminRejected').textContent=a.filter(x=>x.status==='ปฏิเสธ').length;const rows=a.filter(x=>(!f||x.status===f)&&(!q||[(x.booking_code||x.id),(x.customer_name||x.name),x.phone,(x.booking_type||x.type)].join(' ').toLowerCase().includes(q)));$('#adminList').innerHTML=rows.length?rows.map(x=>`<article class="admin-card glass"><span class="status-pill ${x.status==='ยืนยันแล้ว'?'approved':x.status==='ปฏิเสธ'?'rejected':'pending'}">${x.status}</span><h3>${x.customer_name||x.name} • ${x.booking_code||x.id}</h3><p>${fmt(x.booking_date||x.date)} เวลา ${x.booking_time||x.time} • ${x.booking_type||x.type}</p><p>📞 ${x.phone}</p><div class="admin-actions"><button class="small-btn approve" onclick="changeStatus('${x.booking_code||x.id}','ยืนยันแล้ว')">ยืนยัน</button><button class="small-btn reject" onclick="changeStatus('${x.booking_code||x.id}','ปฏิเสธ')">ปฏิเสธ</button><button class="small-btn delete" onclick="deleteOne('${x.booking_code||x.id}')">ลบ</button></div></article>`).join(''):'<div class="admin-card glass">ยังไม่มีรายการจอง</div>'}
+window.changeStatus=async(id,s)=>{await setState(id,s);render()};window.deleteOne=async id=>{if(confirm('ลบรายการนี้หรือไม่?')){await remove(id);render()}};
+document.addEventListener('DOMContentLoaded',()=>{global();const p=document.body.dataset.page;if(p==='home')home();if(p==='booking')booking();if(p==='status')status();if(p==='admin')admin()});

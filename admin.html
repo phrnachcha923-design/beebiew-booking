@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<title>ตรวจสอบสถานะการจอง</title></head><body data-page="status">
+<title>BeeBiew Admin</title></head><body data-page="admin">
 <div class="scroll-progress" id="scrollProgress"></div>
 <div class="aurora a1"></div><div class="aurora a2"></div><div class="sparkles"></div>
 <header class="topbar glass">
@@ -22,10 +22,14 @@
 </header>
 
 <main class="page-main">
-<section class="section reveal narrow">
-<div class="section-title"><span>BOOKING STATUS</span><h1>ตรวจสอบสถานะการจอง</h1><p>กรอกรหัสการจองและเบอร์โทรศัพท์ที่ใช้ส่งคำขอ</p></div>
-<form id="statusForm" class="glass status-form"><label>รหัสการจอง<input name="bookingId" required placeholder="เช่น BB2608071234"></label><label>เบอร์โทรศัพท์<input name="phone" required inputmode="tel" placeholder="เบอร์ที่ใช้จอง"></label><button class="btn primary shimmer" type="submit">🔎 ตรวจสอบสถานะ</button></form>
-<div id="statusResult"></div>
+<section class="section reveal">
+<div class="section-title"><span>ADMIN DASHBOARD</span><h1>จัดการคำขอจอง</h1><p>ระบบสาธิตสำหรับจัดการข้อมูลที่เก็บในเบราว์เซอร์เครื่องนี้</p></div>
+<div id="adminLogin" class="admin-login glass"><h3>เข้าสู่ระบบแอดมิน</h3><input id="adminEmail" type="email" placeholder="อีเมลแอดมิน"><input id="adminPassword" type="password" placeholder="รหัสผ่าน"><button id="adminLoginBtn" class="btn primary">เข้าสู่ระบบ</button><small>เปลี่ยน PIN ได้ในไฟล์ script.js ก่อนนำขึ้นใช้งาน</small></div>
+<div id="adminPanel" hidden>
+  <div class="stats-grid admin-stats"><article class="stat glass"><i>📋</i><strong id="adminTotal">0</strong><span>ทั้งหมด</span></article><article class="stat glass"><i>⏳</i><strong id="adminPending">0</strong><span>รอยืนยัน</span></article><article class="stat glass"><i>✅</i><strong id="adminApproved">0</strong><span>ยืนยันแล้ว</span></article><article class="stat glass"><i>❌</i><strong id="adminRejected">0</strong><span>ปฏิเสธ</span></article></div>
+  <div class="admin-toolbar glass"><input id="adminSearch" placeholder="ค้นหาชื่อ เบอร์โทร หรือรหัสการจอง"><select id="adminFilter"><option value="">ทุกสถานะ</option><option>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>ปฏิเสธ</option></select><button class="btn ghost" id="exportBookings">ดาวน์โหลด CSV</button></div>
+  <div id="adminList" class="admin-list"></div>
+</div>
 </section>
 </main>
 <footer class="footer glass">
