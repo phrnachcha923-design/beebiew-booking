@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#c46d84" />
+  <meta name="description" content="BeeBiew Booking ระบบส่งคำขอจองคิวออนไลน์สไตล์ Luxury Pink" />
+  <title>BeeBiew Booking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Charmonman:wght@400;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="luxury-bg" aria-hidden="true">
+    <span class="blur-orb orb-one"></span><span class="blur-orb orb-two"></span><span class="blur-orb orb-three"></span>
+    <span class="sparkle sparkle-one">✦</span><span class="sparkle sparkle-two">✧</span><span class="sparkle sparkle-three">✦</span>
+  </div>
+
+  <header class="hero" id="home">
+    <nav class="nav container glass-nav" aria-label="เมนูหลัก">
+      <a class="brand" href="#home"><img src="assets/logo.png" alt="โลโก้ BeeBiew" /><span>BeeBiew Booking</span></a>
+      <div class="nav-menu">
+        <a href="tel:0646761581">📞 โทร</a>
+        <a href="#booking-types">💕 ไปหา</a>
+        <a href="#booking-types">🍻 ZINC</a>
+        <a href="#booking-types">🍻 ไป #</a>
+        <a href="#booking">📅 จองทั่วไป</a>
+      </div>
+    </nav>
+
+    <div class="hero-content container reveal">
+      <div class="hero-logo-wrap"><span class="gold-bee">🐝</span><img class="hero-logo" src="assets/logo.png" alt="BeeBiew" /></div>
+      <p class="eyebrow">LUXURY PINK BOOKING</p>
+      <h1>จองกับ BeeBiew<br />ได้ง่าย ๆ <span>💖</span></h1>
+      <p class="hero-text">ประสบการณ์จองคิวที่สวย หรู ใช้งานง่าย และเป็นส่วนตัวสำหรับทุกนัดหมายของคุณ</p>
+      <a class="primary-button bounce-button" href="#booking">💗 จองคิวเลย</a>
+
+      <div class="summary-grid reveal" id="summaryCards">
+        <article class="summary-card glass-panel"><span class="summary-icon">✅</span><div><small>จองแล้ววันนี้</small><strong id="todayBooked">0 คิว</strong></div></article>
+        <article class="summary-card glass-panel"><span class="summary-icon">⏰</span><div><small>คิวคงเหลือ</small><strong id="todayRemaining">2 คิว</strong></div></article>
+        <article class="summary-card glass-panel"><span class="summary-icon">💖</span><div><small>จำนวนรับสูงสุด</small><strong>2 คิว/วัน</strong></div></article>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container reveal" id="booking-types">
+      <div class="section-heading"><p class="eyebrow">CHOOSE YOUR MOMENT</p><h2>เลือกประเภทการจอง</h2><p>แตะการ์ดที่ต้องการ การ์ดจะเปลี่ยนเป็นสีชมพูพร้อมเครื่องหมาย ✓</p></div>
+      <div class="booking-grid" id="bookingCards">
+        <button class="booking-card glass-panel" type="button" data-type="จองคิวเที่ยว"><span class="card-icon">✈️</span><span>จองคิวเที่ยว</span><span class="check">✓</span></button>
+        <button class="booking-card glass-panel" type="button" data-type="จองคิวกินข้าว"><span class="card-icon">🍽️</span><span>จองคิวกินข้าว</span><span class="check">✓</span></button>
+        <button class="booking-card glass-panel" type="button" data-type="จองคิวให้ไปหา"><span class="card-icon">💕</span><span>จองคิวให้ไปหา</span><span class="check">✓</span></button>
+        <button class="booking-card glass-panel" type="button" data-type="จองคิวมาที่ห้อง"><span class="card-icon">🏠</span><span>จองคิวมาที่ห้อง</span><span class="check">✓</span></button>
+        <button class="booking-card glass-panel" type="button" data-type="จองคิวไป Zinc"><span class="card-icon">🍻</span><span>จองคิวไป ZINC</span><span class="check">✓</span></button>
+        <button class="booking-card glass-panel" type="button" data-type="จองคิวไป #"><span class="card-icon">🍻</span><span>จองคิวไป #</span><span class="check">✓</span></button>
+        <button class="booking-card glass-panel" type="button" data-type="จองคิวดูหนัง"><span class="card-icon">🎬</span><span>จองคิวดูหนัง</span><span class="check">✓</span></button>
+        <button class="booking-card glass-panel" type="button" data-type="จองคิวอื่น ๆ"><span class="card-icon">📅</span><span>จองทั่วไป</span><span class="check">✓</span></button>
+      </div>
+    </section>
+
+    <section class="section container reveal" id="booking">
+      <div class="booking-panel glass-panel">
+        <div class="form-intro"><p class="eyebrow">BOOK YOUR MOMENT</p><h2>ส่งคำขอจองคิว</h2><p>กรอกข้อมูลให้ครบ ระบบจะตรวจสอบคิวของวันที่เลือกให้อัตโนมัติ</p><div class="availability" id="availabilityBox" role="status" aria-live="polite"><span class="availability-dot"></span><span id="availabilityText">เลือกวันที่เพื่อตรวจสอบคิวว่าง</span></div></div>
+        <form id="bookingForm" novalidate>
+          <div class="form-grid">
+            <label class="field"><span>ชื่อผู้จอง *</span><input type="text" id="name" name="name" placeholder="กรอกชื่อของคุณ" autocomplete="name" required /><small class="error-message"></small></label>
+            <label class="field"><span>เบอร์โทรศัพท์ *</span><input type="tel" id="phone" name="phone" placeholder="เช่น 0812345678" inputmode="tel" autocomplete="tel" required /><small class="error-message"></small></label>
+            <label class="field"><span>วันที่ *</span><input type="date" id="date" name="date" required /><small class="error-message"></small></label>
+            <label class="field"><span>เวลา *</span><select id="time" name="time" required><option value="">เลือกเวลา</option></select><small class="error-message"></small></label>
+            <label class="field full-width"><span>ประเภทการจอง *</span><select id="bookingType" name="bookingType" required><option value="">เลือกประเภทการจอง</option><option>จองคิวเที่ยว</option><option>จองคิวกินข้าว</option><option>จองคิวให้ไปหา</option><option>จองคิวมาที่ห้อง</option><option>จองคิวไป Zinc</option><option>จองคิวไป #</option><option>จองคิวดูหนัง</option><option>จองคิวอื่น ๆ</option></select><small class="error-message"></small></label>
+            <label class="field full-width"><span>สถานที่นัดหมาย (ถ้ามี)</span><input type="text" id="location" name="location" placeholder="ระบุสถานที่นัดหมาย" /></label>
+            <label class="field full-width"><span>รายละเอียดเพิ่มเติม</span><textarea id="details" name="details" rows="4" placeholder="แจ้งรายละเอียดเพิ่มเติมได้ที่นี่"></textarea></label>
+          </div>
+          <label class="consent"><input type="checkbox" id="rulesConsent" required /><span>ฉันอ่านและยอมรับกฎการจองแล้ว</span></label><small class="consent-error" id="consentError"></small>
+          <button class="primary-button submit-button bounce-button" id="submitButton" type="submit">💖 ส่งคำขอจอง</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="section container reveal"><div class="rules-panel glass-panel"><div class="section-heading left"><p class="eyebrow">PLEASE READ</p><h2>📌 กฎการจอง</h2></div><ul class="rules-list"><li><span>🕘</span><p>เปิดให้จองทุกวัน เวลา 09:00–20:00 น.</p></li><li><span>💗</span><p>รับเพียง 2 คิวต่อวัน</p></li><li><span>⏰</span><p>กรุณามาตรงเวลาตามเวลาที่จอง</p></li><li><span>🔄</span><p>หากต้องการเลื่อนหรือยกเลิก กรุณาแจ้งล่วงหน้าอย่างน้อย 24 ชั่วโมง</p></li><li><span>❗</span><p>หากจองแล้วไม่มาตามนัด หรือยกเลิกกะทันหันโดยไม่แจ้งล่วงหน้า BeeBiew Booking ขอสงวนสิทธิ์ในการปฏิเสธการรับจองครั้งต่อไป เพื่อความเป็นธรรมกับผู้ที่ต้องการจองคิวท่านอื่น</p></li><li><span>💌</span><p>การจองจะสมบูรณ์เมื่อได้รับการยืนยันจาก BeeBiew Booking แล้วเท่านั้น</p></li></ul></div></section>
+
+    <section class="contact-section reveal"><div class="container contact-card glass-panel"><img src="assets/logo.png" alt="โลโก้ BeeBiew Booking" /><p class="eyebrow">CONTACT US</p><h2>BeeBiew Booking</h2><a class="phone-number" href="tel:0646761581">📞 064-676-1581</a><div class="contact-actions"><a class="secondary-button bounce-button" href="tel:0646761581">📞 โทรเลย</a><a class="primary-button bounce-button" href="#booking">💗 จองคิวเลย</a></div></div></section>
+  </main>
+
+  <footer class="luxury-footer"><div class="container footer-content"><img src="assets/logo.png" alt="BeeBiew" /><h3>BeeBiew Booking</h3><p>© 2026 All Rights Reserved</p><div class="social-links"><a href="#" aria-label="Instagram">Instagram</a><span>|</span><a href="#" aria-label="Facebook">Facebook</a><span>|</span><a href="#" aria-label="TikTok">TikTok</a></div><a class="back-top" href="#home">กลับด้านบน ↑</a></div></footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal" id="successModal" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="successTitle"><button class="modal-close" type="button" data-close-modal aria-label="ปิด">×</button><div class="success-icon">💖</div><h2 id="successTitle">ส่งคำขอจองสำเร็จ</h2><p>BeeBiew Booking ได้รับคำขอของคุณแล้ว กรุณารอการติดต่อกลับเพื่อยืนยันคิว</p><div class="booking-summary" id="bookingSummary"></div><button class="primary-button bounce-button" type="button" data-close-modal>เรียบร้อย</button></div></div>
+  <script src="script.js"></script>
+</body>
+</html>
